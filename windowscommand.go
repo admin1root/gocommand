@@ -2,7 +2,6 @@ package gocommand
 
 import (
 	"io/ioutil"
-	"os"
 	"os/exec"
 	"syscall"
 )
@@ -20,8 +19,8 @@ func NewWindowsCommand() *WindowsCommand {
 // args: 命令行参数
 // return: 进程的pid, 命令行结果, 错误消息
 func (lc *WindowsCommand) Exec(args ...string) (int, string, error) {
-	args = append([]string{"-c"}, args...)
-	cmd := exec.Command("cmd", args...)
+	args = append([]string{"/c"}, args...)
+	cmd := exec.Command("cmd.exe", args...)
 
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 
@@ -32,6 +31,7 @@ func (lc *WindowsCommand) Exec(args ...string) (int, string, error) {
 		return 0, "", err
 	}
 
+	//err := cmd.Run()
 	err = cmd.Start()
 	if err != nil {
 		return 0, "", err
@@ -88,11 +88,12 @@ func (lc *WindowsCommand) ExecAsync(stdout chan string, args ...string) int {
 // args: 命令行参数
 // return: 错误消息
 func (lc *WindowsCommand) ExecIgnoreResult(args ...string) error {
-	args = append([]string{"-c"}, args...)
-	cmd := exec.Command("cmd", args...)
+	args = append([]string{"start "}, args...)
+	args = append([]string{"/c"}, args...)
+	cmd := exec.Command("cmd.exe", args...)
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	//cmd.Stdout = os.Stdout
+	//cmd.Stderr = os.Stderr
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 
 	err := cmd.Run()
